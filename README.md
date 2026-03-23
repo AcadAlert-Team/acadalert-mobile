@@ -1,3 +1,11 @@
+note:
+Auth backend is live. You can start building the Login and Registration screens. Here are the environment variables for your .env file:"
+EXPO_PUBLIC_SUPABASE_URL= (https://fbbiznahthcjrjlvwfud.supabase.co)
+EXPO_PUBLIC_SUPABASE_ANON_KEY= [eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiYml6bmFodGhjanJqbHZ3ZnVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyODk4NTAsImV4cCI6MjA4Nzg2NTg1MH0.NAyRqtP9GTXlSfHNgyWSUTwvQ-TtJdzv_pkWq9dopks]
+"When a user registers, make sure you also insert their name and role ('student' or 'teacher') into the profiles table using their new Auth UID!
+
+
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
