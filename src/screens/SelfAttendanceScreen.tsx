@@ -18,8 +18,8 @@ export default function SelfAttendanceScreen() {
   });
   const [loading, setLoading] = useState(true);
 
-  const backendURL = 'https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api';
-  const studentId = 'S04'; // Using your new DB schema ID!
+  const backendURL = 'http://192.168.29.147:5001/api';
+  const studentId = 'S04'; 
 
   // NEW: Fetch previous data when the screen opens
   useEffect(() => {

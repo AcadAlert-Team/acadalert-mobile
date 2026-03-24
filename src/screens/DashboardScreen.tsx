@@ -9,7 +9,7 @@ export default function DashboardScreen() {
   const studentId = 'S04'; 
   
   // 2. Point this to your live Express server ngrok link
-  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/dashboard/${studentId}`;
+  const backendURL = `http://192.168.29.147:5001/api/dashboard/${studentId}`;
 
   // 3. Fetch the live data when the app opens
   useEffect(() => {
