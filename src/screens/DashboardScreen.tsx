@@ -13,14 +13,19 @@ export default function DashboardScreen() {
   const studentId = 'S04';
 
   // 2. Point this to your live Express server ngrok link
-  const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api/dashboard/${studentId}`;
+  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/dashboard/${studentId}`;
 
   // 3. Fetch the live data when the app opens AND when returning to the screen
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
 
-      fetch(backendURL)
+      fetch(backendURL, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
+        },
+      })
         .then(res => res.json())
         .then(data => {
           if (isActive) {
