@@ -33,12 +33,17 @@ export default function SelfAttendanceScreen() {
   });
   const [loading, setLoading] = useState(true);
 
-  const backendURL = 'https://carly-homozygous-federico.ngrok-free.dev/api';
+  const backendURL = 'https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api';
   const studentId = 'S04'; // Using your new DB schema ID!
 
   // NEW: Fetch previous data when the screen opens
   useEffect(() => {
-    fetch(`${backendURL}/attendance/${studentId}`)
+    fetch(`${backendURL}/attendance/${studentId}`, {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json',
+      },
+    })
       .then(res => res.json())
       .then(data => {
         if (data.cgip_attended !== undefined) {
@@ -76,7 +81,10 @@ export default function SelfAttendanceScreen() {
 
       const response = await fetch(`${backendURL}/sync-attendance`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload), // 2. Send the combined package
       });
 

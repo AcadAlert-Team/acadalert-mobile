@@ -16,13 +16,18 @@ export default function AttendanceScreen() {
   const [loading, setLoading] = useState(true);
 
   const studentId = 'S04';
-  const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api/subject-analysis/${studentId}`;
+  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/subject-analysis/${studentId}`;
 
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
 
-      fetch(backendURL)
+      fetch(backendURL, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
+        },
+      })
         .then(res => res.json())
         .then(data => {
           if (isActive) {
