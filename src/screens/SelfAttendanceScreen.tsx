@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 // 1. We define exactly what the valid subject IDs are
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -9,16 +18,22 @@ const subjects: { id: SubjectKey; name: string }[] = [
   { id: 'CD', name: 'Compiler Design' },
   { id: 'IEFT', name: 'Industrial Economics' },
   { id: 'AAD', name: 'Algorithm Analysis' },
-  { id: 'ELEC', name: 'Elective' }
+  { id: 'ELEC', name: 'Elective' },
 ];
 
 export default function SelfAttendanceScreen() {
-  const [attendanceData, setAttendanceData] = useState<Record<SubjectKey, string>>({
-    CGIP: '', CD: '', IEFT: '', AAD: '', ELEC: ''
+  const [attendanceData, setAttendanceData] = useState<
+    Record<SubjectKey, string>
+  >({
+    CGIP: '',
+    CD: '',
+    IEFT: '',
+    AAD: '',
+    ELEC: '',
   });
   const [loading, setLoading] = useState(true);
 
-  const backendURL = 'https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api';
+  const backendURL = 'https://carly-homozygous-federico.ngrok-free.dev/api';
   const studentId = 'S04'; // Using your new DB schema ID!
 
   // NEW: Fetch previous data when the screen opens
@@ -32,13 +47,13 @@ export default function SelfAttendanceScreen() {
             CD: data.cd_attended.toString(),
             IEFT: data.ieft_attended.toString(),
             AAD: data.aad_attended.toString(),
-            ELEC: data.elec_attended.toString()
+            ELEC: data.elec_attended.toString(),
           });
         }
         setLoading(false);
       })
       .catch(err => {
-        console.error("Failed to load previous data", err);
+        console.error('Failed to load previous data', err);
         setLoading(false);
       });
   }, []);
@@ -50,15 +65,15 @@ export default function SelfAttendanceScreen() {
   const handleSubmit = async () => {
     try {
       // 1. Force the studentId into the data package!
-      const payload = { 
+      const payload = {
         CGIP: attendanceData.CGIP,
         CD: attendanceData.CD,
         IEFT: attendanceData.IEFT,
         AAD: attendanceData.AAD,
         ELEC: attendanceData.ELEC,
-        student_id: studentId // This is what Express is looking for!
+        student_id: studentId, // This is what Express is looking for!
       };
-      
+
       const response = await fetch(`${backendURL}/sync-attendance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,23 +81,31 @@ export default function SelfAttendanceScreen() {
       });
 
       const data = await response.json();
-      Alert.alert("Data Synced", "Your attendance has been successfully updated on the server.");
+      Alert.alert(
+        'Data Synced',
+        'Your attendance has been successfully updated on the server.',
+      );
     } catch (error) {
-      Alert.alert("Network Error", "Could not reach the server.");
+      Alert.alert('Network Error', 'Could not reach the server.');
     }
   };
 
-  if (loading) return <ActivityIndicator size="large" color="#0D6EFD" style={{flex: 1}} />;
+  if (loading)
+    return (
+      <ActivityIndicator size="large" color="#0D6EFD" style={{ flex: 1 }} />
+    );
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <Text style={styles.title}>Self Attendance</Text>
-        <Text style={styles.subtitle}>Initialize your current semester attendance records.</Text>
+        <Text style={styles.subtitle}>
+          Initialize your current semester attendance records.
+        </Text>
       </View>
 
       <View style={styles.formContainer}>
-        {subjects.map((sub) => (
+        {subjects.map(sub => (
           <View key={sub.id} style={styles.inputGroup}>
             <Text style={styles.label}>{sub.name}</Text>
             <View style={styles.inputWrapper}>
@@ -92,7 +115,7 @@ export default function SelfAttendanceScreen() {
                 placeholder="0"
                 placeholderTextColor="#999"
                 value={attendanceData[sub.id]}
-                onChangeText={(val) => handleInputChange(sub.id, val)}
+                onChangeText={val => handleInputChange(sub.id, val)}
               />
               <Text style={styles.suffix}>classes attended</Text>
             </View>
@@ -110,7 +133,7 @@ export default function SelfAttendanceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA', 
+    backgroundColor: '#F8F9FA',
   },
   content: {
     padding: 24,
@@ -176,7 +199,7 @@ const styles = StyleSheet.create({
     color: '#6C757D',
   },
   button: {
-    backgroundColor: '#0D6EFD', 
+    backgroundColor: '#0D6EFD',
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: 'center',
@@ -191,5 +214,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
-  }
+  },
 });
