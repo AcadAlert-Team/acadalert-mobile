@@ -1,31 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const studentId = 'S04'; 
+const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/dashboard/${studentId}`;
 
 export default function DashboardScreen() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. Lock onto Safvan for the High Risk demo
-  const studentId = 'S04'; 
-  
-  // 2. Point this to your live Express server ngrok link
-  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/dashboard/${studentId}`;
-
-  // 3. Fetch the live data when the app opens
   useEffect(() => {
-    fetch(backendURL)
-      .then(res => res.json())
+    fetch(backendURL, {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(async res => {
+        const textResponse = await res.text();
+        
+        // 1. Check if ngrok sent an HTML warning page
+        if (textResponse.trim().startsWith('<')) {
+          throw new Error("Ngrok is sending an HTML page. Is your Node server running?");
+        }
+
+        const data = JSON.parse(textResponse);
+
+        // 2. If the backend sent a 404 or 500, grab the EXACT error message and throw it!
+        if (!res.ok) {
+          throw new Error(data.error || `Server Error: Status ${res.status}`);
+        }
+
+        return data;
+      })
       .then(data => {
         setDashboardData(data);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Failed to fetch dashboard data:", err);
+        console.error("Dashboard Fetch Error:", err.message);
+        // 3. Save the specific error to display on the UI
+        setDashboardData({ error: err.message });
         setLoading(false);
       });
   }, []);
 
-  // Show a loading spinner while waiting for the ML model
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -35,29 +54,31 @@ export default function DashboardScreen() {
     );
   }
 
-  // Show error if ngrok is down
+  // CHANGED: We now show the EXACT error message on the screen so we aren't guessing!
   if (!dashboardData || dashboardData.error) {
     return (
-      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ color: '#FA5252', fontSize: 16, fontWeight: 'bold' }}>⚠️ Failed to connect to server.</Text>
-        <Text style={{ color: '#6C757D', marginTop: 10 }}>Check if ngrok and Flask are running.</Text>
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+        <Text style={{ color: '#FA5252', fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>⚠️ Backend Rejected Request</Text>
+        <Text style={{ color: '#495057', marginTop: 10, textAlign: 'center', fontWeight: '600' }}>
+          Reason: {dashboardData?.error || "Unknown Error"}
+        </Text>
+        <Text style={{ color: '#868E96', marginTop: 15, textAlign: 'center', fontSize: 12 }}>
+          Check your Supabase database and your Node.js terminal logs.
+        </Text>
       </SafeAreaView>
     );
   }
 
-  // 4. Extract the live data from your Express/Flask backend!
   const { student_name, attendance_rate, risk_level, ai_insight, backlogs } = dashboardData;
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Dynamic Header Background */}
         <View style={styles.topBackground}>
           <Text style={styles.greeting}>Good morning,</Text>
           <Text style={styles.name}>{student_name}</Text>
         </View>
 
-        {/* Floating Risk Card */}
         <View style={styles.cardContainer}>
           <View style={[styles.riskCard, risk_level === 'High' ? styles.riskHigh : styles.riskLow]}>
             <View style={styles.cardHeader}>
@@ -71,7 +92,6 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* Quick Stats Grid */}
         <Text style={styles.sectionTitle}>Overview</Text>
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
@@ -94,30 +114,11 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F6F8' },
-  topBackground: {
-    backgroundColor: '#0D6EFD',
-    padding: 24,
-    paddingTop: 40,
-    paddingBottom: 80,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-  },
+  topBackground: { backgroundColor: '#0D6EFD', padding: 24, paddingTop: 40, paddingBottom: 80, borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
   greeting: { fontSize: 18, color: '#E9ECEF', opacity: 0.9 },
   name: { fontSize: 36, fontWeight: '900', color: '#FFFFFF', marginTop: 4 },
-  cardContainer: {
-    paddingHorizontal: 20,
-    marginTop: -60,
-  },
-  riskCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-  },
+  cardContainer: { paddingHorizontal: 20, marginTop: -60 },
+  riskCard: { backgroundColor: '#FFFFFF', padding: 24, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 8 },
   riskHigh: { borderTopWidth: 6, borderTopColor: '#FA5252' },
   riskLow: { borderTopWidth: 6, borderTopColor: '#40C057' },
   textHigh: { color: '#FA5252' },
@@ -129,18 +130,7 @@ const styles = StyleSheet.create({
   insightText: { fontSize: 15, color: '#495057', lineHeight: 22, fontWeight: '500' },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: '#212529', marginHorizontal: 24, marginTop: 30, marginBottom: 15 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 30 },
-  statBox: {
-    backgroundColor: '#FFFFFF',
-    width: '30%',
-    paddingVertical: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 3,
-  },
+  statBox: { backgroundColor: '#FFFFFF', width: '30%', paddingVertical: 20, borderRadius: 16, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 3 },
   statValue: { fontSize: 24, fontWeight: '800', color: '#212529', marginBottom: 5 },
   statLabel: { fontSize: 12, color: '#868E96', fontWeight: '600', textAlign: 'center' }
 });

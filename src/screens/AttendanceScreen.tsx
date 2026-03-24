@@ -6,7 +6,7 @@ export default function AttendanceScreen() {
   const [loading, setLoading] = useState(true);
 
   const studentId = 'S04'; 
-  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/subject-analysis/${studentId}`;
+const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/subject-analysis/${studentId}`;
 
   useEffect(() => {
     fetch(backendURL)
