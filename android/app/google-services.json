@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "212308292086",
+    "project_id": "acadalert-98c8c",
+    "storage_bucket": "acadalert-98c8c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212308292086:android:bfcd91850a1dacd403d7d7",
+        "android_client_info": {
+          "package_name": "com.acadalert"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeMbpqO8sEpD0h7q30wBRvZ475pNKvU_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212308292086:android:c4165bdfbb33103a03d7d7",
+        "android_client_info": {
+          "package_name": "com.acadalert.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeMbpqO8sEpD0h7q30wBRvZ475pNKvU_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

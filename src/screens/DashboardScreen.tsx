@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { supabase } from '../utils/supabase';
 
 export default function DashboardScreen() {
+  const navigation = useNavigation<any>();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,12 +53,31 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* 🚀 FIXED LOGOUT BUTTON */}
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={async () => {
+          try {
+            await supabase.auth.signOut();
+            // This will now work perfectly with a Stack Navigator
+            navigation.replace('Login');
+          } catch (error) {
+            console.error('Logout failed', error);
+          }
+        }}
+      >
+        <Text style={styles.logoutText}>Logout</Text>
+      </TouchableOpacity>
+
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Dynamic Header Background */}
         <View style={styles.topBackground}>
           <Text style={styles.greeting}>Good morning,</Text>
           <Text style={styles.name}>{student_name}</Text>
         </View>
+
+        {/* Floating Risk Card */}
+        {/* ... (Keep the rest of your ScrollView exactly the same!) ... */}
 
         {/* Floating Risk Card */}
         <View style={styles.cardContainer}>
@@ -87,6 +109,7 @@ export default function DashboardScreen() {
             <Text style={styles.statLabel}>Days to Exams</Text>
           </View>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -142,5 +165,24 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   statValue: { fontSize: 24, fontWeight: '800', color: '#212529', marginBottom: 5 },
-  statLabel: { fontSize: 12, color: '#868E96', fontWeight: '600', textAlign: 'center' }
+  statLabel: { fontSize: 12, color: '#868E96', fontWeight: '600', textAlign: 'center' },
+  logoutButton: {
+    position: 'absolute',
+    top: 50, // <-- Pushed down to avoid the Android battery/wifi status bar!
+    right: 20,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1.5,
+    borderColor: '#EF4444',
+    borderRadius: 12,
+    paddingHorizontal: 14, // Makes it a nice wide pill shape
+    paddingVertical: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  logoutText: {
+    color: '#EF4444',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
 });
