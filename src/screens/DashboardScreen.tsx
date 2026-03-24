@@ -1,36 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DashboardScreen() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // 1. Lock onto Safvan for the High Risk demo
-  const studentId = 'S04'; 
-  
+  const studentId = 'S04';
+
   // 2. Point this to your live Express server ngrok link
-  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/dashboard/${studentId}`;
+  const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api/dashboard/${studentId}`;
 
   // 3. Fetch the live data when the app opens
-  useEffect(() => {
-    fetch(backendURL)
-      .then(res => res.json())
-      .then(data => {
-        setDashboardData(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch dashboard data:", err);
-        setLoading(false);
-      });
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      fetch(backendURL)
+        .then(res => res.json())
+        .then(data => {
+          if (isActive) {
+            setDashboardData(data);
+            setLoading(false);
+          }
+        })
+        .catch(err => {
+          console.error('Failed to fetch dashboard data:', err);
+          if (isActive) setLoading(false);
+        });
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   // Show a loading spinner while waiting for the ML model
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
         <ActivityIndicator size="large" color="#0D6EFD" />
-        <Text style={{ marginTop: 15, color: '#6C757D', fontWeight: '600' }}>Running AI Analysis...</Text>
+        <Text style={{ marginTop: 15, color: '#6C757D', fontWeight: '600' }}>
+          Running AI Analysis...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -38,15 +65,30 @@ export default function DashboardScreen() {
   // Show error if ngrok is down
   if (!dashboardData || dashboardData.error) {
     return (
-      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ color: '#FA5252', fontSize: 16, fontWeight: 'bold' }}>⚠️ Failed to connect to server.</Text>
-        <Text style={{ color: '#6C757D', marginTop: 10 }}>Check if ngrok and Flask are running.</Text>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
+        <Text style={{ color: '#FA5252', fontSize: 16, fontWeight: 'bold' }}>
+          ⚠️ Failed to connect to server.
+        </Text>
+        <Text style={{ color: '#6C757D', marginTop: 10 }}>
+          Check if ngrok and Flask are running.
+        </Text>
       </SafeAreaView>
     );
   }
 
   // 4. Extract the live data from your Express/Flask backend!
-  const { student_name, attendance_rate, risk_level, ai_insight, backlogs } = dashboardData;
+  const {
+    student_name,
+    attendance_percentage,
+    risk_level,
+    ai_insight,
+    backlogs,
+  } = dashboardData;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,12 +101,24 @@ export default function DashboardScreen() {
 
         {/* Floating Risk Card */}
         <View style={styles.cardContainer}>
-          <View style={[styles.riskCard, risk_level === 'High' ? styles.riskHigh : styles.riskLow]}>
+          <View
+            style={[
+              styles.riskCard,
+              risk_level === 'HIGH' ? styles.riskHigh : styles.riskLow,
+            ]}
+          >
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>AI Risk Assessment</Text>
-              <Text style={styles.icon}>{risk_level === 'High' ? '⚠️' : '✅'}</Text>
+              <Text style={styles.icon}>
+                {risk_level === 'HIGH' ? '⚠️' : '✅'}
+              </Text>
             </View>
-            <Text style={[styles.riskBadge, risk_level === 'High' ? styles.textHigh : styles.textLow]}>
+            <Text
+              style={[
+                styles.riskBadge,
+                risk_level === 'HIGH' ? styles.textHigh : styles.textLow,
+              ]}
+            >
               {risk_level ? risk_level.toUpperCase() : 'UNKNOWN'} RISK
             </Text>
             <Text style={styles.insightText}>{ai_insight}</Text>
@@ -75,7 +129,7 @@ export default function DashboardScreen() {
         <Text style={styles.sectionTitle}>Overview</Text>
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{attendance_rate}%</Text>
+            <Text style={styles.statValue}>{attendance_percentage}%</Text>
             <Text style={styles.statLabel}>Overall</Text>
           </View>
           <View style={styles.statBox}>
@@ -122,13 +176,41 @@ const styles = StyleSheet.create({
   riskLow: { borderTopWidth: 6, borderTopColor: '#40C057' },
   textHigh: { color: '#FA5252' },
   textLow: { color: '#40C057' },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
-  cardTitle: { fontSize: 14, fontWeight: '700', color: '#868E96', textTransform: 'uppercase', letterSpacing: 1 },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#868E96',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
   icon: { fontSize: 20 },
   riskBadge: { fontSize: 36, fontWeight: '900', marginBottom: 15 },
-  insightText: { fontSize: 15, color: '#495057', lineHeight: 22, fontWeight: '500' },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: '#212529', marginHorizontal: 24, marginTop: 30, marginBottom: 15 },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 30 },
+  insightText: {
+    fontSize: 15,
+    color: '#495057',
+    lineHeight: 22,
+    fontWeight: '500',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#212529',
+    marginHorizontal: 24,
+    marginTop: 30,
+    marginBottom: 15,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 30,
+  },
   statBox: {
     backgroundColor: '#FFFFFF',
     width: '30%',
@@ -141,6 +223,16 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  statValue: { fontSize: 24, fontWeight: '800', color: '#212529', marginBottom: 5 },
-  statLabel: { fontSize: 12, color: '#868E96', fontWeight: '600', textAlign: 'center' }
+  statValue: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#212529',
+    marginBottom: 5,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#868E96',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
 });
