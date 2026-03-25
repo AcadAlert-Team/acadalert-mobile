@@ -10,17 +10,32 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../utils/supabase';
 
 export default function AttendanceScreen() {
   const [subjectData, setSubjectData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
-  const studentId = 'S04';
-  const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/subject-analysis/${studentId}`;
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setStudentId(user.id);
+      } else {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
+
+      if (!studentId) return;
+
+      const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/subject-analysis/${studentId}`;
 
       fetch(backendURL, {
         headers: {
@@ -43,7 +58,7 @@ export default function AttendanceScreen() {
       return () => {
         isActive = false;
       };
-    }, []),
+    }, [studentId]),
   );
 
   if (loading) {

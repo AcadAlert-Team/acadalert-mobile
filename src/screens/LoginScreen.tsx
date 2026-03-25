@@ -35,7 +35,7 @@ export default function LoginScreen({ navigation }: any) {
           email: email,
           password: password,
           options: {
-            data: { full_name: name, role: role },
+            data: { name: name, full_name: name, role: role },
           },
         });
 
