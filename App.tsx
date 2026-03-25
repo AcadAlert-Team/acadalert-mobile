@@ -52,7 +52,7 @@ export default function App() {
         const token = await messaging().getToken();
         console.log('FCM Token generated');
 
-        await fetch('http://192.168.1.12:5001/api/notifications/register', {
+        await fetch('https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/notifications/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
