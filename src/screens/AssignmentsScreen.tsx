@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import { supabase } from '../utils/supabase'; // Assuming you use this for auth
 
@@ -16,46 +17,54 @@ export default function AssignmentsScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('Pending');
   const [assignments, setAssignments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // 🚨 MOCK DATA: Replace this fetch with your actual backend call later!
   useEffect(() => {
-    // Simulating a backend fetch delay
-    setTimeout(() => {
-      setAssignments([
-        {
-          id: '1',
-          subject: 'Compiler Design',
-          description: 'Build a basic lexical analyzer in C. Ensure it can identify keywords, identifiers, and operators.',
-          dueDate: '2026-04-10',
-          status: 'Pending',
-        },
-        {
-          id: '2',
-          subject: 'Algorithm Analysis',
-          description: 'Implement Dijkstra’s Algorithm and write a 1-page report on its time complexity.',
-          dueDate: '2026-04-15',
-          status: 'Pending',
-        },
-        {
-          id: '3',
-          subject: 'Computer Graphics',
-          description: 'Draw a moving car using the OpenGL graphics library.',
-          dueDate: '2026-03-15',
-          submittedOn: '2026-03-14',
-          status: 'Submitted',
-        },
-        {
-          id: '4',
-          subject: 'Industrial Economics',
-          description: 'Submit the case study report on market structures.',
-          dueDate: '2026-02-28',
-          submittedOn: '2026-02-27',
-          status: 'Submitted',
-        }
-      ]);
-      setLoading(false);
-    }, 800);
+    fetchMyAssignments();
   }, []);
+
+  const fetchMyAssignments = async (useRefresh = false) => {
+    try {
+      if (useRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('Could not get user ID');
+
+      const { data, error } = await supabase
+        .from('pending_assignments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('due_date', { ascending: true });
+
+      if (error) throw error;
+
+      const liveAssignments = (data || []).map(item => {
+        const [subject, ...descParts] = item.title.split(' - ');
+
+        return {
+          id: item.id,
+          subject: subject || 'Assignment',
+          description: descParts.join(' - ') || 'No description provided.',
+          dueDate: new Date(item.due_date).toISOString().split('T')[0],
+          status: item.is_completed ? 'Submitted' : 'Pending',
+        };
+      });
+
+      setAssignments(liveAssignments);
+    } catch (error) {
+      console.error('Failed to fetch assignments:', error);
+    } finally {
+      if (useRefresh) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  };
 
   // Filter the list based on which tab is currently selected
   const displayedAssignments = assignments.filter(a => a.status === activeTab);
@@ -120,6 +129,14 @@ export default function AssignmentsScreen() {
           renderItem={renderAssignmentCard}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => fetchMyAssignments(true)}
+              colors={['#0D6EFD']}
+              tintColor="#0D6EFD"
+            />
+          }
         />
       )}
     </SafeAreaView>

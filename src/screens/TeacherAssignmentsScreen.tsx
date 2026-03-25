@@ -14,6 +14,8 @@ import {
   Platform
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
+import { API_BASE_URL } from '../utils/api';
+import { supabase } from '../utils/supabase';
 
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -47,10 +49,11 @@ export default function TeacherAssignmentsScreen() {
   const [dueDate, setDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api`;
+  const backendURL = API_BASE_URL;
 
   useEffect(() => {
     fetchStudents();
+    fetchAssignments();
   }, []);
 
   const fetchStudents = () => {
@@ -66,6 +69,34 @@ export default function TeacherAssignmentsScreen() {
       });
   };
 
+  const fetchAssignments = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('assignments')
+        .select('*')
+        .order('due_date', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        const liveAssignments = data.map((item, index) => ({
+          id: item.assignment_id ? item.assignment_id.toString() : `fallback-${index}`,
+          subject: item.subject || 'Assignment',
+          description: item.description || 'No description provided.',
+          dueDate: item.due_date || 'No Date',
+          submissions: item.submissions || {},
+        }));
+
+        setAssignments(liveAssignments);
+      }
+    } catch (err) {
+      console.error("Error fetching live assignments:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios'); 
     if (selectedDate) {
@@ -73,30 +104,47 @@ export default function TeacherAssignmentsScreen() {
     }
   };
 
-  const handleCreateAssignment = () => {
+  const handleCreateAssignment = async () => {
     if (!subject || !description) {
       Alert.alert("Missing Fields", "Please fill out all fields.");
       return;
     }
 
     const formattedDate = dueDate.toISOString().split('T')[0];
+    const subjectName = subjects.find(s => s.id === subject)?.name;
 
     const newAssignment = {
-      id: Date.now().toString(),
-      subject: subjects.find(s => s.id === subject)?.name,
+      id: `temp-${Date.now()}`,
+      assignment_id: `temp-${Date.now()}`,
+      subject: subjectName,
       description,
       dueDate: formattedDate,
-      // 👈 Changed to an object (dictionary) to map student IDs to their marks
-      submissions: {} 
+      submissions: {}
     };
 
     setAssignments([newAssignment, ...assignments]);
+
+    const { error } = await supabase
+      .from('assignments')
+      .insert([
+        {
+          subject: subjectName,
+          description: description,
+          due_date: formattedDate,
+        },
+      ]);
+
+    if (error) {
+      console.error("Failed to save assignment:", error);
+      Alert.alert("Database Error", error.message || JSON.stringify(error));
+      return;
+    }
     
     setSubject('');
     setDescription('');
     setDueDate(new Date());
     setCreateModalVisible(false);
-    Alert.alert("Success", "Assignment Created!");
+    Alert.alert("Success", "Assignment Published to all students!");
   };
 
   // --- OPEN GRADING POPUP ---
@@ -108,10 +156,10 @@ export default function TeacherAssignmentsScreen() {
   };
 
   // --- SAVE MARK LOGIC ---
-  const saveMark = () => {
+  const saveMark = async () => {
     const updatedSubmissions = { ...selectedAssignment.submissions };
+    let isGraded = false;
 
-    // If teacher clears the input, remove the grade
     if (markInput.trim() === '') {
       delete updatedSubmissions[gradingStudent.id];
     } else {
@@ -121,11 +169,27 @@ export default function TeacherAssignmentsScreen() {
         return;
       }
       updatedSubmissions[gradingStudent.id] = mark;
+      isGraded = true;
     }
 
     const updatedAssignment = { ...selectedAssignment, submissions: updatedSubmissions };
     setSelectedAssignment(updatedAssignment);
     setAssignments(assignments.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
+
+    const assignmentTitle = `${selectedAssignment.subject} - ${selectedAssignment.description}`;
+
+    const { error } = await supabase
+      .from('pending_assignments')
+      .update({ is_completed: isGraded })
+      .eq('user_id', gradingStudent.id)
+      .eq('title', assignmentTitle);
+
+    if (error) {
+      console.error("Failed to update student database:", error);
+      Alert.alert("Database Error", "Could not sync grade to student's dashboard.");
+    } else {
+      console.log(`✅ Successfully marked assignment as completed for student!`);
+    }
 
     setGradingStudent(null);
     setMarkInput('');

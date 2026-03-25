@@ -15,6 +15,7 @@ import {
 // 🚀 NEW: Import navigation and Supabase for the logout function!
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../utils/supabase';
+import { API_BASE_URL } from '../utils/api';
 
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -40,7 +41,7 @@ export default function TeacherDashboardScreen() {
   });
   const [modalLoading, setModalLoading] = useState(false);
 
-  const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api`;
+  const backendURL = API_BASE_URL;
 
   useEffect(() => {
     fetchStudents();
@@ -152,8 +153,7 @@ export default function TeacherDashboardScreen() {
       <View style={styles.cardLeft}>
         <View style={[styles.statusIndicator, { backgroundColor: getRiskColor(item.risk) }]} />
         <View>
-          <Text style={styles.studentName}>{item.name}</Text>
-          <Text style={styles.studentId}>ID: {item.id}</Text>
+          <Text style={styles.studentName} numberOfLines={1}>{item.name}</Text>
         </View>
       </View>
       <View style={styles.cardRight}>

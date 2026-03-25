@@ -21,6 +21,8 @@ export default function LoginScreen({ navigation }: any) {
 
   // --- THE NEW AUTHENTICATION LOGIC ---
   const handleAuth = async () => {
+    console.log("🚀 [LOGIN] 1. Button clicked!");
+
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
@@ -30,6 +32,7 @@ export default function LoginScreen({ navigation }: any) {
 
     try {
       if (isSignup) {
+        console.log("🚀 [LOGIN] 2. Attempting Sign Up...");
         // Create a new user in Supabase
         const { error } = await supabase.auth.signUp({
           email: email,
@@ -44,6 +47,7 @@ export default function LoginScreen({ navigation }: any) {
         setIsSignup(false); // Switch back to login mode
 
       } else {
+        console.log("🚀 [LOGIN] 2. Attempting Sign In...");
         // Log an existing user in
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
           email: email,
@@ -52,33 +56,43 @@ export default function LoginScreen({ navigation }: any) {
 
         if (authError) throw authError;
 
-        // 1. Grab the role from the secure Auth metadata (where it was safely stored!)
-        const metadataRole = authData.session.user.user_metadata?.role;
+        const currentUser = authData.user;
+        console.log("🚀 [LOGIN] 3. Auth Success! User ID:", currentUser?.id);
+        if (!currentUser) throw new Error("Login succeeded, but user data is missing.");
 
-        // 2. Check the profile table as a backup
-        const { data: profile } = await supabase
-          .from('profiles')
+        const metadataRole = currentUser.user_metadata?.role;
+        console.log("🚀 [LOGIN] 4. Metadata Role found:", metadataRole);
+
+        console.log("🚀 [LOGIN] 5. Asking database for role...");
+        const { data: profile, error: profileError } = await supabase
+          .from('students')
           .select('role')
-          .eq('id', authData.session.user.id)
+          .eq('id', currentUser.id)
           .single();
 
-        // 3. Determine the final role (If profiles is empty, use the metadata!)
+        if (profileError) {
+          console.log("⚠️ [LOGIN] Database lookup failed (this is okay if metadata exists):", profileError.message);
+        }
+
+        console.log("🚀 [LOGIN] 6. Database Role found:", profile?.role);
+
         const finalRole = metadataRole || profile?.role || 'student';
 
-        // 🚨 NEW TRAPS: Let's see exactly what Supabase knows!
-        console.log("🚨 METADATA ROLE:", metadataRole);
-        console.log("🚨 PROFILE ROLE:", profile?.role);
+        console.log("🚀 [LOGIN] 7. Final Routing Role:", finalRole);
 
-        // 4. Route them based on the true role
         if (finalRole.trim().toLowerCase() === 'teacher') {
+          console.log("🚀 [LOGIN] 8. Executing Teacher Navigation...");
           navigation.replace("TeacherTabs");
         } else {
+          console.log("🚀 [LOGIN] 8. Executing Student Navigation...");
           navigation.replace("StudentTabs");
         }
       }
     } catch (error: any) {
-      Alert.alert("Authentication Failed", error.message);
+      console.error("🚨 [LOGIN] CRASH CAUGHT:", error);
+      Alert.alert("Authentication Failed", error.message || JSON.stringify(error));
     } finally {
+      console.log("🚀 [LOGIN] 9. Finally block reached. Turning off spinner.");
       setLoading(false);
     }
   };

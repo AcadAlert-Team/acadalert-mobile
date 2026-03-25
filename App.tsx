@@ -5,6 +5,7 @@ import AppNavigator from './src/navigation/AppNavigator';
 import messaging from '@react-native-firebase/messaging';
 import { supabase } from './src/utils/supabase';
 import { LogBox } from 'react-native';
+import { API_BASE_URL } from './src/utils/api';
 
 // This hides the Firebase yellow warnings
 LogBox.ignoreLogs(['This method is deprecated (as well as all React Native Firebase']);
@@ -12,13 +13,13 @@ LogBox.ignoreLogs(['This method is deprecated (as well as all React Native Fireb
 export default function App() {
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         const currentUser = session?.user;
 
         if (currentUser) {
           console.log('User detected! Setting up push notifications for:', currentUser.id);
-          await setupPushNotifications(currentUser.id);
+          setupPushNotifications(currentUser.id);
         }
       }
     });
@@ -52,16 +53,10 @@ export default function App() {
         const token = await messaging().getToken();
         console.log('FCM Token generated');
 
-        await fetch('https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/notifications/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: userId,
-            fcmToken: token,
-          }),
-        });
+        await supabase
+          .from('students')
+          .update({ fcm_token: token })
+          .eq('id', userId);
 
         console.log('Token successfully paired with user in database!');
       } catch (error) {
