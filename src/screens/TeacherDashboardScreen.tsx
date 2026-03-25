@@ -40,7 +40,7 @@ export default function TeacherDashboardScreen() {
   });
   const [modalLoading, setModalLoading] = useState(false);
 
-  const backendURL = `http://192.168.1.12:5001/api`;
+  const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api`;
 
   useEffect(() => {
     fetchStudents();

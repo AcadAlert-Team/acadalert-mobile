@@ -5,19 +5,30 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Text } from 'react-native'; 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Import all screens
+// ==========================================
+// 📥 IMPORT ALL SCREENS
+// ==========================================
 import LoginScreen from "../screens/LoginScreen"; 
+
+// Student Screens
 import DashboardScreen from "../screens/DashboardScreen";
-import SelfAttendanceScreen from "../screens/SelfAttendanceScreen";
 import AttendanceScreen from "../screens/AttendanceScreen"; 
-import TimetableScreen from "../screens/TimetableScreen";
-// 👇 IMPORT YOUR NEW TEACHER DASHBOARD HERE
+import AssignmentsScreen from "../screens/AssignmentsScreen"; // 👈 New Student Assignments
+import SelfAttendanceScreen from "../screens/SelfAttendanceScreen";
+
+// Teacher Screens
 import TeacherDashboardScreen from "../screens/TeacherDashboardScreen"; 
+import TeacherAssignmentsScreen from "../screens/TeacherAssignmentsScreen";
+
+// Shared Screens
+import TimetableScreen from "../screens/TimetableScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// 1. Student Tabs (Untouched - Exactly as you wrote it!)
+// ==========================================
+// 🎓 STUDENT TABS NAVIGATOR
+// ==========================================
 function StudentTabs() {
   const insets = useSafeAreaInsets(); 
 
@@ -28,6 +39,7 @@ function StudentTabs() {
           let iconText = '📋';
           if (route.name === 'Home') iconText = '🏠';
           else if (route.name === 'Analysis') iconText = '📈'; 
+          else if (route.name === 'Assignments') iconText = '📝'; // 👈 Icon for new tab
           else if (route.name === 'Log Classes') iconText = '✍️';
           else if (route.name === 'Timetable') iconText = '📅';
           
@@ -47,13 +59,16 @@ function StudentTabs() {
     >
       <Tab.Screen name="Home" component={DashboardScreen} />
       <Tab.Screen name="Analysis" component={AttendanceScreen} /> 
+      <Tab.Screen name="Assignments" component={AssignmentsScreen} />
       <Tab.Screen name="Log Classes" component={SelfAttendanceScreen} />
       <Tab.Screen name="Timetable" component={TimetableScreen} />
     </Tab.Navigator>
   );
 }
 
-// 2. Teacher Tabs (Replacing the placeholder!)
+// ==========================================
+// 👨‍🏫 TEACHER TABS NAVIGATOR
+// ==========================================
 function TeacherTabs() {
   const insets = useSafeAreaInsets();
 
@@ -81,18 +96,39 @@ function TeacherTabs() {
           )
         }}
       />
+      <Tab.Screen 
+        name="Assignments" 
+        component={TeacherAssignmentsScreen} 
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, opacity: color === '#0D6EFD' ? 1 : 0.5 }}>📝</Text>
+          )
+        }}
+      />
+      <Tab.Screen 
+        name="Timetable" 
+        component={TimetableScreen} 
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, opacity: color === '#0D6EFD' ? 1 : 0.5 }}>📅</Text>
+          )
+        }}
+      />
     </Tab.Navigator>
   );
 }
 
-// 3. The Main App Navigator Stack
+// ==========================================
+// 🚀 MAIN APP NAVIGATOR (STACK)
+// ==========================================
 export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* App starts here at the Login Screen */}
+        {/* The app boots up to the Login Screen */}
         <Stack.Screen name="Login" component={LoginScreen} />
         
+        {/* Once logged in, it routes to one of these based on role */}
         <Stack.Screen name="StudentTabs" component={StudentTabs} />
         <Stack.Screen name="TeacherTabs" component={TeacherTabs} />
       </Stack.Navigator>

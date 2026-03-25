@@ -35,7 +35,7 @@ export default function SelfAttendanceScreen() {
   const [loading, setLoading] = useState(true);
   const [studentId, setStudentId] = useState<string | null>(null);
 
-  const backendURL = 'http://192.168.1.12:5001/api';
+  const backendURL = 'https://overcaptious-jacquline-impatiently.ngrok-free.dev/api';
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
