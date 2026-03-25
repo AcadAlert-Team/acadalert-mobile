@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { supabase } from '../utils/supabase';
 // 1. We define exactly what the valid subject IDs are
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -32,12 +33,25 @@ export default function SelfAttendanceScreen() {
     ELEC: '',
   });
   const [loading, setLoading] = useState(true);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
   const backendURL = 'https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api';
-  const studentId = 'S04'; // Using your new DB schema ID!
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setStudentId(user.id);
+      } else {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // NEW: Fetch previous data when the screen opens
   useEffect(() => {
+    if (!studentId) return;
+
     fetch(`${backendURL}/attendance/${studentId}`, {
       headers: {
         'ngrok-skip-browser-warning': 'true',
@@ -61,13 +75,18 @@ export default function SelfAttendanceScreen() {
         console.error('Failed to load previous data', err);
         setLoading(false);
       });
-  }, []);
+  }, [studentId]);
 
   const handleInputChange = (subjectId: SubjectKey, value: string) => {
     setAttendanceData(prev => ({ ...prev, [subjectId]: value }));
   };
 
   const handleSubmit = async () => {
+    if (!studentId) {
+      Alert.alert('Not Signed In', 'Please sign in before syncing attendance.');
+      return;
+    }
+
     try {
       // 1. Force the studentId into the data package!
       const payload = {
