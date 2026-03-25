@@ -35,7 +35,7 @@ export default function SelfAttendanceScreen() {
   const [loading, setLoading] = useState(true);
   const [studentId, setStudentId] = useState<string | null>(null);
 
-  const backendURL = 'https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api';
+  const backendURL = 'http://192.168.1.12:5001/api';
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -58,7 +58,14 @@ export default function SelfAttendanceScreen() {
         'Content-Type': 'application/json',
       },
     })
-      .then(res => res.json())
+      .then(async (res) => {
+        // 1. Grab the raw text response first to see what the server is saying!
+        const rawText = await res.text();
+        console.log("🚨 THE SECRET SERVER MESSAGE:", rawText);
+
+        // 2. Try to parse it normally
+        return JSON.parse(rawText);
+      })
       .then(data => {
         if (data.cgip_attended !== undefined) {
           setAttendanceData({

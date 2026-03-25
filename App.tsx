@@ -4,6 +4,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/AppNavigator';
 import messaging from '@react-native-firebase/messaging';
 import { supabase } from './src/utils/supabase';
+import { LogBox } from 'react-native';
+
+// This hides the Firebase yellow warnings
+LogBox.ignoreLogs(['This method is deprecated (as well as all React Native Firebase']);
 
 export default function App() {
 
@@ -48,7 +52,7 @@ export default function App() {
         const token = await messaging().getToken();
         console.log('FCM Token generated');
 
-        await fetch('http://192.168.1.16:5001/api/notifications/register', {
+        await fetch('http://192.168.1.12:5001/api/notifications/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

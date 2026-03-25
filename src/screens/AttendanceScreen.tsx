@@ -35,7 +35,7 @@ export default function AttendanceScreen() {
 
       if (!studentId) return;
 
-      const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/subject-analysis/${studentId}`;
+      const backendURL = `http://192.168.1.12:5001/api/subject-analysis/${studentId}`;
 
       fetch(backendURL, {
         headers: {
@@ -43,7 +43,14 @@ export default function AttendanceScreen() {
           'Content-Type': 'application/json',
         },
       })
-        .then(res => res.json())
+        .then(async (res) => {
+          // 1. Trap the text before it crashes!
+          const rawText = await res.text();
+          console.log("🚨 ATTENDANCE SECRET MESSAGE:", rawText);
+
+          // 2. Try to parse it normally
+          return JSON.parse(rawText);
+        })
         .then(data => {
           if (isActive) {
             setSubjectData(data);
@@ -52,7 +59,7 @@ export default function AttendanceScreen() {
         })
         .catch(err => {
           console.error('Failed to load subject analysis', err);
-          setLoading(false);
+          if (isActive) setLoading(false);
         });
 
       return () => {

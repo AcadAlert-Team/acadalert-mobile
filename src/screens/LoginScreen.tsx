@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator
 } from "react-native";
-import { supabase } from "../utils/supabase"; // <-- Ensure this path points to the file we made earlier!
+import { supabase } from "../utils/supabase"; 
 
 export default function LoginScreen({ navigation }: any) {
   const [isSignup, setIsSignup] = useState(false);
@@ -17,7 +17,7 @@ export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
-  const [loading, setLoading] = useState(false); // Added loading state
+  const [loading, setLoading] = useState(false); 
 
   // --- THE NEW AUTHENTICATION LOGIC ---
   const handleAuth = async () => {
@@ -52,13 +52,25 @@ export default function LoginScreen({ navigation }: any) {
 
         if (authError) throw authError;
 
+        // 1. Grab the role from the secure Auth metadata (where it was safely stored!)
+        const metadataRole = authData.session.user.user_metadata?.role;
+
+        // 2. Check the profile table as a backup
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', authData.session.user.id)
           .single();
 
-        if (profile?.role === 'teacher') {
+        // 3. Determine the final role (If profiles is empty, use the metadata!)
+        const finalRole = metadataRole || profile?.role || 'student';
+
+        // 🚨 NEW TRAPS: Let's see exactly what Supabase knows!
+        console.log("🚨 METADATA ROLE:", metadataRole);
+        console.log("🚨 PROFILE ROLE:", profile?.role);
+
+        // 4. Route them based on the true role
+        if (finalRole.trim().toLowerCase() === 'teacher') {
           navigation.replace("TeacherTabs");
         } else {
           navigation.replace("StudentTabs");

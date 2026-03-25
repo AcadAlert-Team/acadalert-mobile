@@ -31,7 +31,10 @@ export default function DashboardScreen() {
 
       if (!studentId) return;
 
-      const backendURL = `https://charlyn-pseudoaesthetic-stockishly.ngrok-free.dev/api/dashboard/${studentId}`;
+      const backendURL = `http://192.168.1.12:5001/api/dashboard/${studentId}`;
+
+      // Add this line to catch the exact URL!
+      console.log("🚨 EXACT DASHBOARD URL:", backendURL);
 
       fetch(backendURL, {
         headers: {
