@@ -7,21 +7,27 @@ import { supabase } from './src/utils/supabase';
 import { LogBox } from 'react-native';
 
 // This hides the Firebase yellow warnings
-LogBox.ignoreLogs(['This method is deprecated (as well as all React Native Firebase']);
+LogBox.ignoreLogs([
+  'This method is deprecated (as well as all React Native Firebase',
+]);
 
 export default function App() {
-
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        const currentUser = session?.user;
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+          const currentUser = session?.user;
 
-        if (currentUser) {
-          console.log('User detected! Setting up push notifications for:', currentUser.id);
-          await setupPushNotifications(currentUser.id);
+          if (currentUser) {
+            console.log(
+              'User detected! Setting up push notifications for:',
+              currentUser.id,
+            );
+            await setupPushNotifications(currentUser.id);
+          }
         }
-      }
-    });
+      },
+    );
 
     return () => {
       authListener.subscription.unsubscribe();
@@ -30,10 +36,15 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived in the foreground!', JSON.stringify(remoteMessage));
+      console.log(
+        'A new FCM message arrived in the foreground!',
+        JSON.stringify(remoteMessage),
+      );
 
       const title = remoteMessage.notification?.title || 'AcadAlert Update';
-      const body = remoteMessage.notification?.body || 'Check your dashboard for new information.';
+      const body =
+        remoteMessage.notification?.body ||
+        'Check your dashboard for new information.';
 
       Alert.alert(title, body, [{ text: 'Got it!' }]);
     });
@@ -52,16 +63,19 @@ export default function App() {
         const token = await messaging().getToken();
         console.log('FCM Token generated');
 
-        await fetch('https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/notifications/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        await fetch(
+          'https://carly-homozygous-federico.ngrok-free.dev/api/notifications/register',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId,
+              fcmToken: token,
+            }),
           },
-          body: JSON.stringify({
-            userId: userId,
-            fcmToken: token,
-          }),
-        });
+        );
 
         console.log('Token successfully paired with user in database!');
       } catch (error) {
