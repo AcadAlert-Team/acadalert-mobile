@@ -11,7 +11,6 @@ import {
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../utils/supabase';
-import { API_BASE_URL } from '../utils/api';
 
 export default function AttendanceScreen() {
   const [subjectData, setSubjectData] = useState<any[]>([]);
@@ -36,7 +35,7 @@ export default function AttendanceScreen() {
 
       if (!studentId) return;
 
-      const backendURL = `${API_BASE_URL}/subject-analysis/${studentId}`;
+      const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/subject-analysis/${studentId}`;
 
       fetch(backendURL, {
         headers: {

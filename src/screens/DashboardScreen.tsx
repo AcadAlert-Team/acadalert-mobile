@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../utils/supabase';
 import { LineChart } from 'react-native-chart-kit';
-import { API_BASE_URL } from '../utils/api';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -32,7 +31,7 @@ export default function DashboardScreen() {
 
       if (!studentId) return;
 
-      const backendURL = `${API_BASE_URL}/dashboard/${studentId}`;
+      const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/dashboard/${studentId}`;
 
       // Add this line to catch the exact URL!
       console.log("🚨 EXACT DASHBOARD URL:", backendURL);
@@ -43,11 +42,7 @@ export default function DashboardScreen() {
           'Content-Type': 'application/json',
         },
       })
-        .then(async (res) => {
-          const rawText = await res.text();
-          console.log('🚨 DASHBOARD RAW RESPONSE:', rawText);
-          return JSON.parse(rawText);
-        })
+        .then(res => res.json())
         .then(data => {
           if (isActive) {
             setDashboardData(data);

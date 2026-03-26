@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { supabase } from '../utils/supabase';
-import { API_BASE_URL } from '../utils/api';
 // 1. We define exactly what the valid subject IDs are
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -36,7 +35,7 @@ export default function SelfAttendanceScreen() {
   const [loading, setLoading] = useState(true);
   const [studentId, setStudentId] = useState<string | null>(null);
 
-  const backendURL = API_BASE_URL;
+  const backendURL = 'https://overcaptious-jacquline-impatiently.ngrok-free.dev/api';
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
