@@ -35,10 +35,12 @@ export default function SelfAttendanceScreen() {
   const [loading, setLoading] = useState(true);
   const [studentId, setStudentId] = useState<string | null>(null);
 
-  const backendURL = 'https://overcaptious-jacquline-impatiently.ngrok-free.dev/api';
+  const backendURL = 'https://carly-homozygous-federico.ngrok-free.dev/api';
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         setStudentId(user.id);
       } else {
@@ -58,10 +60,10 @@ export default function SelfAttendanceScreen() {
         'Content-Type': 'application/json',
       },
     })
-      .then(async (res) => {
+      .then(async res => {
         // 1. Grab the raw text response first to see what the server is saying!
         const rawText = await res.text();
-        console.log("🚨 THE SECRET SERVER MESSAGE:", rawText);
+        console.log('🚨 THE SECRET SERVER MESSAGE:', rawText);
 
         // 2. Try to parse it normally
         return JSON.parse(rawText);

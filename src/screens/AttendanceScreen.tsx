@@ -35,7 +35,7 @@ export default function AttendanceScreen() {
 
       if (!studentId) return;
 
-      const backendURL = `https://overcaptious-jacquline-impatiently.ngrok-free.dev/api/subject-analysis/${studentId}`;
+      const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api/subject-analysis/${studentId}`;
 
       fetch(backendURL, {
         headers: {
