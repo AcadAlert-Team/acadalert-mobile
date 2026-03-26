@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { supabase } from '../utils/supabase';
+import { API_BASE_URL } from '../utils/config';
 // 1. We define exactly what the valid subject IDs are
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -35,7 +36,7 @@ export default function SelfAttendanceScreen() {
   const [loading, setLoading] = useState(true);
   const [studentId, setStudentId] = useState<string | null>(null);
 
-  const backendURL = 'https://carly-homozygous-federico.ngrok-free.dev/api';
+  const backendURL = API_BASE_URL;
   useEffect(() => {
     const fetchUser = async () => {
       const {

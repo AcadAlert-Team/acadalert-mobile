@@ -14,6 +14,7 @@ import {
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { API_BASE_URL } from '../utils/config';
 
 type SubjectKey = 'CGIP' | 'CD' | 'IEFT' | 'AAD' | 'ELEC';
 
@@ -47,7 +48,7 @@ export default function TeacherAssignmentsScreen() {
   const [dueDate, setDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api`;
+  const backendURL = API_BASE_URL;
 
   useEffect(() => {
     fetchStudents();

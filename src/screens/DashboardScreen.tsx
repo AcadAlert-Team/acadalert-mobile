@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../utils/supabase';
 import { LineChart } from 'react-native-chart-kit';
+import { API_BASE_URL } from '../utils/config';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -41,7 +42,7 @@ export default function DashboardScreen() {
 
       if (!studentId) return;
 
-      const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api/dashboard/${studentId}`;
+      const backendURL = `${API_BASE_URL}/dashboard/${studentId}`;
 
       // Add this line to catch the exact URL!
       console.log('🚨 EXACT DASHBOARD URL:', backendURL);

@@ -11,6 +11,7 @@ import {
 
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../utils/supabase'; // Assuming you use this for auth
+import { API_BASE_URL } from '../utils/config';
 
 type TabType = 'Pending' | 'Submitted';
 
@@ -43,7 +44,7 @@ export default function AssignmentsScreen() {
       setLoading(true);
 
       // 2. FIX: Set this to JUST the base API path
-      const backendURL = `https://carly-homozygous-federico.ngrok-free.dev/api`;
+      const backendURL = API_BASE_URL;
 
       // Now this cleanly evaluates to: /api/student/assignments/S04
       fetch(`${backendURL}/student/assignments/${studentId}`, {

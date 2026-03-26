@@ -5,6 +5,7 @@ import AppNavigator from './src/navigation/AppNavigator';
 import messaging from '@react-native-firebase/messaging';
 import { supabase } from './src/utils/supabase';
 import { LogBox } from 'react-native';
+import { API_BASE_URL } from './src/utils/config';
 
 // This hides the Firebase yellow warnings
 LogBox.ignoreLogs([
@@ -63,19 +64,16 @@ export default function App() {
         const token = await messaging().getToken();
         console.log('FCM Token generated');
 
-        await fetch(
-          'https://carly-homozygous-federico.ngrok-free.dev/api/notifications/register',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userId: userId,
-              fcmToken: token,
-            }),
+        await fetch(`${API_BASE_URL}/notifications/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        );
+          body: JSON.stringify({
+            userId: userId,
+            fcmToken: token,
+          }),
+        });
 
         console.log('Token successfully paired with user in database!');
       } catch (error) {
