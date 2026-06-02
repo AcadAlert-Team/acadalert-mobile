@@ -27,8 +27,8 @@ Built on a decoupled microservice architecture, the system features:
 ### 🗄️ System Architecture & Repositories
 Because this is a microservice architecture, the codebase is split into three purpose-built repositories:
 1.  **📱 Frontend (This Repo):** React Native mobile application.
-2.  **⚙️ Core Backend:** [Insert Link to your Node.js Repo Here]
-3.  **🧠 ML Microservice:** [Insert Link to your FastAPI Repo Here]
+2.  **⚙️ Core Backend:** [Link to Node.js Repo Here](https://github.com/AcadAlert-Team/acadalert-backend)]
+3.  **🧠 ML Microservice:** [Link to FastAPI Repo Here](https://github.com/AcadAlert-Team/acadalert-ml)]
 
 ### Tech Stack
 * **Frontend:** React Native, Expo, React Navigation, Chart Kit
