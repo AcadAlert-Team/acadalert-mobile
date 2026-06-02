@@ -55,9 +55,9 @@ export default function LoginScreen({ navigation }: any) {
         // 1. Grab the role from the secure Auth metadata (where it was safely stored!)
         const metadataRole = authData.session.user.user_metadata?.role;
 
-        // 2. Check the profile table as a backup
+        // 2. Check the students table as a backup
         const { data: profile } = await supabase
-          .from('profiles')
+          .from('students')
           .select('role')
           .eq('id', authData.session.user.id)
           .single();

@@ -14,6 +14,7 @@ import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import AttendanceScreen from '../screens/AttendanceScreen';
 import AssignmentsScreen from '../screens/AssignmentsScreen'; // 👈 New Student Assignments
+import SelfAttendanceScreen from '../screens/SelfAttendanceScreen';
 
 // Teacher Screens
 import TeacherDashboardScreen from '../screens/TeacherDashboardScreen';
@@ -66,6 +67,7 @@ function StudentTabs() {
       <Tab.Screen name="Home" component={DashboardScreen} />
       <Tab.Screen name="Analysis" component={AttendanceScreen} />
       <Tab.Screen name="Assignments" component={AssignmentsScreen} />
+      <Tab.Screen name="Log Classes" component={SelfAttendanceScreen} />
       <Tab.Screen name="Timetable" component={TimetableScreen} />
     </Tab.Navigator>
   );

@@ -1,105 +1,79 @@
-note:
-Auth backend is live. You can start building the Login and Registration screens. Here are the environment variables for your .env file:"
-EXPO_PUBLIC_SUPABASE_URL= (https://fbbiznahthcjrjlvwfud.supabase.co)
-EXPO_PUBLIC_SUPABASE_ANON_KEY= [eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiYml6bmFodGhjanJqbHZ3ZnVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyODk4NTAsImV4cCI6MjA4Nzg2NTg1MH0.NAyRqtP9GTXlSfHNgyWSUTwvQ-TtJdzv_pkWq9dopks]
-"When a user registers, make sure you also insert their name and role ('student' or 'teacher') into the profiles table using their new Auth UID!
+🎓 AcadAlert: AI-Powered Academic Digital Twin
+🌍 Live Architecture: 3-Tier Microservice (React Native + Node.js + FastAPI)
+▶️ Video Walkthrough: [Insert Google Drive/YouTube Link Here]
+📦 Download APK: [Insert Link to your app-debug.apk]
 
+The Problem
+Traditional university student portals are passive. They rely on students to actively log in to check their attendance and grades. By the time a student realizes their attendance has dropped below university minimums, it is often too late, leading to academic probation or unnecessary backlogs. Furthermore, faculty lack early-warning systems to identify at-risk students before midterms.
 
+The Solution
+An active, AI-driven Academic Digital Twin that constantly monitors student metrics in the background. Instead of waiting for students to check their portals, AcadAlert pushes critical interventions directly to their lock screens.
 
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+Built on a decoupled microservice architecture, the system features:
 
-# Getting Started
+The ML Inference Engine: A Python FastAPI microservice that analyzes attendance velocity, historical backlogs, and test scores to predict dropout risk.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+The Notification Engine: A Node.js backend running a node-cron daemon that actively scans the Supabase database and triggers Firebase Cloud Messaging (FCM) payloads the minute a deadline passes.
 
-## Step 1: Start Metro
+Role-Based Dashboards: A React Native frontend providing distinct, secure experiences for both Students (analytics and task tracking) and Faculty (class-wide risk assessment).
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+🚀 "Extra Mile" Engineering Features Implemented
+Smart Push Notification Deduplication: Implemented memory-bank validation in the Node.js cron job using JavaScript Sets. This intercepts overlapping database triggers and mathematically guarantees a device only receives a single FCM push payload, eliminating notification spam.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Contextual AI Guardrails: The dashboard doesn't just output raw ML data. It features hardcoded enterprise guardrails that detect specific edge cases—such as a student having a safe overall 83% attendance, but a failing 60% in a single Elective—prompting the UI to recommend preparing a "Condonation Request."
 
-```sh
-# Using npm
-npm start
+Time-Series Analytics: Implemented dynamic React Native line charts that map a student's historical performance trajectory rather than just showing a static current percentage.
 
-# OR using Yarn
-yarn start
-```
+Live Token Refresh Lifecycle: Engineered a secure login/logout lifecycle that dynamically overwrites hardware device tokens in the cloud, preventing failed Firebase push attempts to "ghost" devices.
 
-## Step 2: Build and run your app
+🗄️ System Architecture & Repositories
+Because this is a microservice architecture, the codebase is split into three purpose-built repositories:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+📱 Frontend (This Repo): React Native mobile application.
 
-### Android
+⚙️ Core Backend ([Link to your Node.js Repo]): Express.js API, Supabase Database routing, and the node-cron Firebase push engine.
 
-```sh
-# Using npm
-npm run android
+🧠 ML Microservice ([Link to your FastAPI Repo]): Python inference server hosting the risk-assessment models.
 
-# OR using Yarn
-yarn android
-```
+Tech Stack
+Frontend: React Native, Expo, React Navigation, Chart Kit
 
-### iOS
+Backend: Node.js, Express.js, node-cron
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Machine Learning: Python, FastAPI, Uvicorn
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Database & Auth: Supabase (PostgreSQL)
 
-```sh
-bundle install
-```
+Push Notifications: Firebase Cloud Messaging (FCM) Admin SDK
 
-Then, and every time you update your native dependencies, run:
+Setup Instructions (Local Development)
+If you wish to run the full three-tier architecture locally, please clone all three repositories and follow the sequence below.
 
-```sh
-bundle exec pod install
-```
+1. Start the ML Microservice (Terminal 1)
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Bash
+git clone <your-ml-repo-url>
+cd acadalert-ml
+source venv/bin/activate
+python -m uvicorn dropout_prediction:app --port 8000 --reload
+2. Start the Core Backend (Terminal 2)
 
-```sh
-# Using npm
-npm run ios
+Bash
+git clone <your-backend-repo-url>
+cd acadalert-backend
+npm install
+# Ensure .env contains SUPABASE_URL, SUPABASE_KEY, and Firebase Admin credentials
+npm start 
+3. Create Local Tunnel (Terminal 3)
 
-# OR using Yarn
-yarn ios
-```
+Bash
+ngrok http 5001
+# Copy the resulting https:// URL
+4. Launch the Mobile App (Terminal 4)
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Bash
+git clone <your-mobile-repo-url>
+cd acadalert-mobile
+npm install
+# Update API_BASE_URL in config with the Ngrok URL
+npx react-native run-android

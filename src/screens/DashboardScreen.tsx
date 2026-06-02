@@ -8,8 +8,10 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import messaging from '@react-native-firebase/messaging';
 import { supabase } from '../utils/supabase';
 import { LineChart } from 'react-native-chart-kit';
 import { API_BASE_URL } from '../utils/config';
@@ -34,6 +36,29 @@ export default function DashboardScreen() {
       }
     };
     fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+
+      Alert.alert(
+        remoteMessage.notification?.title || '🚨 AcadAlert Update',
+        remoteMessage.notification?.body || 'You have a new academic update.',
+        [
+          {
+            text: 'View Assignments',
+            onPress: () => navigation.navigate('Assignments'),
+          },
+          {
+            text: 'Dismiss',
+            style: 'cancel',
+          },
+        ],
+      );
+    });
+
+    return unsubscribe;
   }, []);
 
   useFocusEffect(
