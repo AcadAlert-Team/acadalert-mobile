@@ -1,8 +1,9 @@
 # 🎓 AcadAlert: AI-Powered Academic Digital Twin
 
 🌍 **Live Architecture:** 3-Tier Microservice (React Native + Node.js + FastAPI)
-▶️ **Video Walkthrough:** `Teacher Walkthrough-https://drive.google.com/file/d/1nHNo77CZVPv1OEJYqB5Yz0hUyT8kMagv/view?usp=drive_link`
-`Student Walkthrough-https://drive.google.com/file/d/1zNq9z6sm-FNRvsaMedfp8T_STH_EeyJM/view?usp=drive_link`
+
+▶️ **Video Walkthrough:** [Teacher Walkthrough](https://drive.google.com/file/d/1nHNo77CZVPv1OEJYqB5Yz0hUyT8kMagv/view?usp=drive_link)
+[Student Walkthrough](https://drive.google.com/file/d/1zNq9z6sm-FNRvsaMedfp8T_STH_EeyJM/view?usp=drive_link)
 
 📦📦 **Download APK:** [Click here to download AcadAlert v1.0.0](https://drive.google.com/file/d/1z_8cVcRr9GM2qZrXxJVa3Jr0d6WBz7da/view?usp=drive_link)
 
