@@ -18,11 +18,12 @@ Built on a decoupled microservice architecture, the system features:
 * **The Notification Engine:** A Node.js backend running a `node-cron` daemon that actively scans the Supabase database and triggers Firebase Cloud Messaging (FCM) payloads the minute a deadline passes.
 * **Role-Based Dashboards:** A React Native frontend providing distinct, secure experiences for both Students (analytics and task tracking) and Faculty (class-wide risk assessment).
 
-### 🚀 "Extra Mile" Engineering Features Implemented
-* **Smart Push Notification Deduplication:** Implemented memory-bank validation in the Node.js cron job using JavaScript `Sets`. This intercepts overlapping database triggers and mathematically guarantees a device only receives a single FCM push payload, eliminating notification spam.
-* **Contextual AI Guardrails:** The dashboard doesn't just output raw ML data. It features hardcoded enterprise guardrails that detect specific edge cases—such as a student having a safe overall 83% attendance, but a failing 60% in a single Elective—prompting the UI to recommend preparing a "Condonation Request."
-* **Time-Series Analytics:** Implemented dynamic React Native line charts that map a student's historical performance trajectory rather than just showing a static current percentage.
-* **Live Token Refresh Lifecycle:** Engineered a secure login/logout lifecycle that dynamically overwrites hardware device tokens in the cloud, preventing failed Firebase push attempts to "ghost" devices.
+### 🚀 Engineering Highlights & System Architecture
+* **Decoupled 3-Tier Microservice Architecture:** Engineered a highly modular, independent ecosystem utilizing a React Native mobile client, a Node.js/Express orchestration layer, and a dedicated FastAPI Python machine learning service to ensure non-blocking, high-speed data inferences.
+* **Hybrid AI & Heuristic Micro-Analysis:** The risk engine combines a Scikit-learn predictive model (calculating LOW/MED/HIGH dropout probabilities) with a deterministic, algebraic heuristic engine. This allows the dashboard to generate highly specific, context-aware recovery paths (e.g., dynamically calculating exact attendance deficits required to meet a 75% university threshold).
+* **Automated Daemon & FCM Deduplication:** Designed a continuous Node-cron orchestration job that actively monitors PostgreSQL for impending deadlines. Implemented strict memory-bank validation to intercept overlapping database triggers, mathematically guaranteeing single-delivery Firebase Cloud Messaging (FCM) push payloads to active hardware tokens.
+* **Time-Series Digital Twin Analytics:** Built a robust data visualization layer. Instead of static percentage snapshots, the dashboard maps historical attendance velocity and logs weekly study consistency, providing educators with a true, real-time "Digital Twin" of student study habits.
+
 
 ### 🗄️ System Architecture & Repositories
 Because this is a microservice architecture, the codebase is split into three purpose-built repositories:
