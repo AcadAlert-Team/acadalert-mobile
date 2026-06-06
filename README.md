@@ -23,6 +23,7 @@ Built on a decoupled microservice architecture, the system features:
 * **Hybrid AI & Heuristic Micro-Analysis:** The risk engine combines a Scikit-learn predictive model (calculating LOW/MED/HIGH dropout probabilities) with a deterministic, algebraic heuristic engine. This allows the dashboard to generate highly specific, context-aware recovery paths (e.g., dynamically calculating exact attendance deficits required to meet a 75% university threshold).
 * **Automated Daemon & FCM Deduplication:** Designed a continuous Node-cron orchestration job that actively monitors PostgreSQL for impending deadlines. Implemented strict memory-bank validation to intercept overlapping database triggers, mathematically guaranteeing single-delivery Firebase Cloud Messaging (FCM) push payloads to active hardware tokens.
 * **Time-Series Digital Twin Analytics:** Built a robust data visualization layer. Instead of static percentage snapshots, the dashboard maps historical attendance velocity and logs weekly study consistency, providing educators with a true, real-time "Digital Twin" of student study habits.
+* **☁️ Cloud-Native Production Environment:** Architected a decoupled microservice deployment on **AWS EC2**. Utilized **PM2** process management to guarantee continuous, parallel uptime for both the Node.js and FastAPI services. Engineered credential-less, automated AI log backups to **AWS S3** using secure **IAM Role** policies.
 
 
 ### 🗄️ System Architecture & Repositories
@@ -31,12 +32,16 @@ Because this is a microservice architecture, the codebase is split into three pu
 2.  **⚙️ Core Backend:** [Link to Node.js Repo Here](https://github.com/AcadAlert-Team/acadalert-backend)]
 3.  **🧠 ML Microservice:** [Link to FastAPI Repo Here](https://github.com/AcadAlert-Team/acadalert-ml)]
 
-### Tech Stack
+## 🛠️ Tech Stack
+
 * **Frontend:** React Native, Expo, React Navigation, Chart Kit
-* **Backend:** Node.js, Express.js, node-cron
+* **Core Backend:** Node.js, Express.js, node-cron
 * **Machine Learning:** Python, FastAPI, Uvicorn
+* **Cloud Infrastructure:** AWS EC2, PM2 Daemonization, AWS S3, AWS IAM Roles
 * **Database & Auth:** Supabase (PostgreSQL)
 * **Push Notifications:** Firebase Cloud Messaging (FCM) Admin SDK
+
+> **Production Status:** The backend services are currently deployed and running live on AWS EC2. The local setup instructions below are provided for development purposes only.
 
 ### Setup Instructions (Local Development)
 If you wish to run the full three-tier architecture locally, please clone all three repositories and follow the sequence below.
